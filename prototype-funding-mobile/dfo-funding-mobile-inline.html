@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DFO Funding Portal — Application form (mobile)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ---------- GC Design System tokens (unchanged from desktop) ---------- */
+  :root{
+    --gc-text:#333333;
+    --gc-link:#284162;
+    --gc-link-hover:#0535d2;
+    --gc-red:#af3c43;          /* page title underline */
+    --gc-flag-red:#f4252b;
+    --gc-navy:#26374a;         /* dark buttons / nav / active step */
+    --gc-badge:#2962A3;        /* CAD amount badge */
+    --gc-green:#278400;        /* completed step */
+    --gc-danger:#b10e1e;       /* delete */
+    --gc-border:#cccccc;
+    --gc-rule:#bbbbbb;
+    --gc-bg-muted:#f5f6f7;
+    --gc-pill:#e1eaf0;         /* "In progress" pill */
+    --gc-info:#269abc;         /* info notice rule */
+    --gc-focus:#ffbf47;        /* GC focus highlight */
+    --body:"Noto Sans",-apple-system,"Segoe UI",Roboto,sans-serif;
+    --display:"Lato",-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:#e9ebee;
+    font-family:var(--body);
+    color:var(--gc-text);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    padding:24px 12px;
+  }
+
+  /* ---------- Phone frame (fixed viewport, app scrolls inside) ---------- */
+  .device{
+    width:320px;
+    max-width:100%;
+    height:680px;
+    margin:0 auto;
+    background:#fff;
+    border-radius:28px;
+    box-shadow:0 14px 40px rgba(0,0,0,.22);
+    overflow:hidden;
+    border:1px solid #d8dadd;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+  }
+  .device-notch{
+    height:26px;background:#000;border-radius:0 0 16px 16px;width:140px;margin:0 auto;flex:0 0 auto;
+  }
+
+  .app{ /* the real, fluid mobile page — this is the scroll container */
+    width:100%;
+    flex:1 1 auto;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    background:#fff;
+    position:relative;
+  }
+
+  /* ---------- Header / wordmark ---------- */
+  header{padding:16px 16px 14px;border-bottom:1px solid #e2e4e6;}
+  .wordmark-row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .wordmark{display:flex;align-items:center;gap:10px;}
+  .flag{flex:0 0 auto;width:40px;height:20px;display:block;}
+  .wordmark .gov{font-family:var(--display);font-weight:700;font-size:14px;line-height:1.15;color:#000;}
+  .wordmark .gov span{display:block;font-weight:400;}
+  .lang{
+    flex:0 0 auto;color:var(--gc-link);font-size:20px;font-weight:700;
+    text-decoration:underline;text-underline-offset:3px;
+  }
+
+  /* search */
+  .search{display:flex;margin-top:16px;}
+  .search input{
+    flex:1;min-width:0;height:52px;border:1px solid var(--gc-border);border-right:0;
+    padding:0 14px;font-size:17px;font-family:var(--body);border-radius:0;color:#5a5a5a;
+  }
+  .search button{
+    width:56px;height:52px;background:var(--gc-navy);border:0;color:#fff;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+  }
+
+  /* full-width Menu button */
+  .menubar{padding:16px;}
+  .menu-btn{
+    width:100%;height:56px;border:1px solid var(--gc-navy);border-radius:6px;background:#fff;
+    color:var(--gc-navy);font-family:var(--display);font-weight:700;font-size:20px;cursor:pointer;
+  }
+  .menu-btn[aria-expanded="true"]{background:var(--gc-navy);color:#fff;}
+
+  /* slide-down main nav */
+  .mainnav{display:none;border-top:1px solid #e4e6e8;border-bottom:1px solid #e4e6e8;background:var(--gc-bg-muted);}
+  .mainnav.open{display:block;}
+  .mainnav a{
+    display:block;padding:14px 16px;color:var(--gc-link);text-decoration:none;font-size:16px;
+    border-bottom:1px solid #e4e6e8;min-height:48px;
+  }
+  .mainnav a:last-child{border-bottom:0;}
+  .mainnav a.nav-signout{font-weight:700;color:var(--gc-navy);}
+
+  /* ---------- Content wrapper ---------- */
+  main{padding:16px 16px 28px;}
+  .breadcrumb{font-size:13px;color:var(--gc-text);margin-bottom:14px;display:flex;flex-wrap:wrap;gap:4px 6px;}
+  .breadcrumb a{color:var(--gc-link);text-decoration:underline;}
+  .breadcrumb .sep{color:#888;}
+
+  h1{
+    font-family:var(--display);font-size:32px;line-height:1.15;margin:4px 0 4px;color:#1c1c1c;font-weight:700;
+  }
+  h1::after{content:"";display:block;width:54px;height:3px;background:var(--gc-red);margin-top:8px;}
+  .intro{margin:14px 0 0;font-size:16px;}
+  .intro strong{font-weight:700;}
+
+  /* ---------- "Application form menu" — in flow, sticky on scroll ---------- */
+  .menu-sticky{
+    position:sticky;top:0;z-index:60;margin:20px 0 12px;
+    background:#fff;padding:8px 0;
+  }
+  .menu-trigger{
+    width:100%;display:flex;align-items:center;justify-content:center;gap:12px;
+    background:#fff;border:2px solid var(--gc-navy);border-radius:8px;padding:10px 16px;
+    cursor:pointer;min-height:45px;
+    font-family:var(--display);font-weight:700;font-size:18px;color:var(--gc-navy);
+  }
+  .menu-trigger svg{width:20px;height:20px;flex:0 0 auto;}
+
+  /* ---------- Inline action bar (Save draft + overflow) ---------- */
+  .action-inline{display:flex;gap:12px;margin:0 0 12px;}
+  .ai-save{
+    flex:1;display:inline-flex;align-items:center;justify-content:center;gap:10px;
+    height:48px;background:#fff;border:2px solid var(--gc-navy);border-radius:8px;
+    color:var(--gc-navy);font-family:var(--display);font-weight:700;font-size:18px;cursor:pointer;
+  }
+  .ai-save svg{width:18px;height:18px;flex:0 0 auto;}
+  .ai-more-wrap{position:relative;flex:0 0 auto;}
+  .ai-kebab{
+    width:56px;height:48px;background:#fff;border:2px solid var(--gc-navy);border-radius:8px;
+    color:var(--gc-navy);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  }
+  .ai-kebab svg{width:22px;height:22px;}
+  .autosave-note{font-size:15px;color:var(--gc-text);margin:0 0 14px;}
+  .action-divider{border:0;border-top:1px solid var(--gc-rule);margin:0 0 6px;}
+
+  /* ---------- Bottom sheet ---------- */
+  .sheet-overlay{
+    position:absolute;inset:0;z-index:100;display:flex;align-items:flex-end;
+    background:rgba(0,0,0,.45);
+  }
+  .sheet-overlay[hidden]{display:none;}
+  .sheet{
+    width:100%;max-height:90%;background:#fff;border-radius:16px 16px 0 0;
+    display:flex;flex-direction:column;box-shadow:0 -8px 30px rgba(0,0,0,.25);
+    animation:sheetUp .25s ease;
+  }
+  @keyframes sheetUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+  .sheet-grab{width:40px;height:4px;border-radius:2px;background:#cfd3d7;margin:10px auto 2px;flex:0 0 auto;}
+  .sheet-inner{overflow-y:auto;padding:6px 16px 24px;}
+  .btn-close{
+    width:100%;height:48px;background:#fff;border:1px solid var(--gc-navy);color:var(--gc-navy);
+    border-radius:4px;font-weight:700;font-size:16px;cursor:pointer;font-family:var(--body);margin:6px 0 16px;
+  }
+  .sheet-title{font-family:var(--display);font-size:22px;font-weight:700;margin:0 0 4px;color:#1c1c1c;}
+
+  /* steps inside the sheet (accordion) */
+  .m-step{border-bottom:1px solid #eaecee;}
+  .m-step:last-child{border-bottom:0;}
+  .m-step-head{
+    width:100%;display:flex;align-items:flex-start;gap:12px;background:none;border:0;cursor:pointer;
+    padding:14px 4px;text-align:left;font-family:var(--body);min-height:56px;
+  }
+  .m-step-head .marker{
+    flex:0 0 auto;width:28px;height:28px;border-radius:50%;border:2px solid #6f6f6f;color:#444;
+    display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;background:#fff;
+  }
+  .m-step.done  .m-step-head .marker{background:var(--gc-green);border-color:var(--gc-green);color:#fff;}
+  .m-step.active .m-step-head .marker{background:var(--gc-navy);border-color:var(--gc-navy);color:#fff;}
+  .m-step-head .label{flex:1;font-weight:700;font-size:17px;color:var(--gc-text);margin-top:2px;}
+  .m-step-head .chev{flex:0 0 auto;color:#555;margin-top:4px;transition:transform .2s;}
+  .m-step.expanded .m-step-head .chev{transform:rotate(180deg);}
+
+  .m-substeps{display:none;margin:0 0 8px 13px;padding:2px 0 2px 22px;border-left:2px solid var(--gc-border);}
+  .m-step.expanded .m-substeps{display:block;}
+  .m-substep{padding:10px 0;font-size:16px;color:var(--gc-text);}
+  .m-substep .dot{margin-right:6px;}
+  .m-substep.current{
+    font-weight:700;background:var(--gc-bg-muted);
+    margin:0 -16px 0 -24px;padding:10px 16px 10px 24px;border-radius:0;
+  }
+  .pill{
+    display:inline-flex;align-items:center;gap:6px;background:var(--gc-pill);color:var(--gc-navy);
+    font-size:13px;font-weight:700;border-radius:14px;padding:5px 12px;margin-top:8px;
+  }
+  .pill svg{width:13px;height:13px;}
+  .pill.complete{background:var(--gc-green);color:#fff;padding-right:6px;}
+  .pill.complete .check{
+    width:17px;height:17px;border-radius:50%;background:#fff;
+    display:inline-flex;align-items:center;justify-content:center;
+  }
+  .pill.complete .check svg{width:11px;height:11px;stroke:var(--gc-green);}
+
+  /* ---------- Form sections ---------- */
+  h2{font-family:var(--display);font-size:26px;font-weight:700;margin:28px 0 14px;color:#1c1c1c;}
+  .field-label{font-weight:700;font-size:16px;}
+  .field-label .req{font-weight:400;color:#555;}
+  .field-help{font-size:14px;color:#5a5a5a;margin:2px 0 8px;}
+  .field{margin-bottom:18px;}
+
+  /* error message (shown above the input when the field is in error) */
+  .field-error{
+    display:none;align-items:center;gap:7px;margin:0 0 8px;
+    color:var(--gc-danger);font-weight:700;font-size:15px;
+  }
+  .field.error .field-error{display:flex;}
+  .field-error svg{width:18px;height:18px;flex:0 0 auto;}
+
+  input[type=text],input[type=number],select,textarea{
+    width:100%;font-family:var(--body);font-size:16px;color:var(--gc-text);
+    border:2px solid #333;border-radius:4px;padding:0 12px;background:#fff;
+  }
+  input[type=text],input[type=number],select{height:48px;}
+  textarea{min-height:120px;padding:12px;line-height:1.5;resize:vertical;}
+  select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px;}
+
+  /* focus */
+  input:focus,select:focus,textarea:focus{
+    border-color:#2962A3;outline:3px solid rgba(41,98,163,.30);outline-offset:0;
+  }
+  /* error */
+  .field.error input,.field.error select,.field.error textarea{border-color:var(--gc-danger);}
+  /* error while focused — focus colour wins, message stays */
+  .field.error input:focus,.field.error select:focus,.field.error textarea:focus{border-color:#2962A3;}
+  /* disabled */
+  input:disabled,select:disabled,textarea:disabled{
+    background:#d6d6d6;border-color:#9a9a9a;color:#6f6f6f;cursor:not-allowed;
+  }
+
+  /* ---------- Activity card ---------- */
+  .activity{border:1px solid var(--gc-border);border-radius:6px;margin:18px 0;overflow:hidden;}
+  .badge-row{padding:0;}
+  .badge{
+    display:inline-block;background:var(--gc-badge);color:#fff;font-weight:700;font-size:14px;
+    padding:5px 12px;border-radius:0 0 4px 0;
+  }
+  .activity-head{
+    display:flex;align-items:flex-start;gap:10px;width:100%;padding:6px 16px 4px;
+    background:none;border:0;text-align:left;font-family:var(--body);cursor:pointer;
+  }
+  .activity-head .acc-chev{flex:0 0 auto;margin-top:4px;transition:transform .2s;}
+  .activity.collapsed .acc-chev{transform:rotate(-90deg);}
+  .activity-title{font-family:var(--display);font-size:20px;font-weight:700;margin:0;color:#1c1c1c;}
+  .activity-dates{font-size:15px;color:var(--gc-text);margin:0;padding:0 16px 12px;}
+  .activity-body{padding:0 16px;}
+  .activity.collapsed .activity-body{display:none;}
+  .activity-foot{padding:14px 16px 16px;}
+
+  .btn-add{
+    display:inline-flex;align-items:center;gap:8px;background:#fff;border:2px solid var(--gc-navy);
+    color:var(--gc-navy);font-weight:700;font-size:18px;border-radius:8px;padding:0 16px;height:48px;
+    cursor:pointer;font-family:var(--display);
+  }
+  .btn-add svg{width:18px;height:18px;}
+
+  /* ---------- Cost-category form (rendered inside the bottom sheet) ---------- */
+  .cc-form{margin-bottom:0;}
+  .cc-form h4{font-family:var(--display);font-size:20px;font-weight:700;margin:0 0 16px;}
+  .cc-form .field{margin-bottom:18px;}
+  .form-actions{display:flex;flex-direction:column;gap:12px;margin-top:8px;}
+  .btn-done{background:var(--gc-navy);color:#fff;border:0;border-radius:4px;width:100%;height:48px;padding:0 22px;font-size:16px;font-weight:700;cursor:pointer;}
+  .btn-delete{background:var(--gc-danger);color:#fff;border:0;border-radius:4px;width:100%;height:48px;padding:0 22px;font-size:16px;font-weight:700;cursor:pointer;}
+
+  /* ---------- Saved cost-category summary: one card per category ---------- */
+  .cc-card{border:1px solid var(--gc-border);border-radius:6px;margin-bottom:14px;overflow:hidden;}
+  .cc-card-head{background:var(--gc-bg-muted);border-bottom:1px solid var(--gc-border);padding:14px 16px;}
+  .cc-card-head .cc-name{font-family:var(--display);font-weight:700;font-size:20px;line-height:1.2;margin:0;color:#1c1c1c;}
+  .cc-card-body{padding:0 16px;}
+  .cc-row{padding:14px 0;border-bottom:1px solid var(--gc-rule);}
+  .cc-row .k{font-weight:700;font-size:16px;margin:0 0 3px;}
+  .cc-row .v{font-size:16px;margin:0;}
+  .cc-card-actions{display:flex;gap:22px;padding:6px 16px 12px;}
+  .link-edit,.link-delete{
+    display:inline-flex;align-items:center;gap:7px;background:none;border:0;cursor:pointer;
+    font-size:16px;padding:8px 0;min-height:44px;font-family:var(--body);
+  }
+  .link-edit{color:var(--gc-link);text-decoration:underline;text-underline-offset:2px;}
+  .link-delete{color:var(--gc-danger);}
+  .link-edit svg{width:16px;height:16px;}
+  .link-delete svg{width:16px;height:16px;}
+
+  /* activity-level totals: labels with blue badges */
+  .activity-totals{margin:4px 0 14px;}
+  .at-divider{border:0;border-top:1px solid var(--gc-rule);margin:14px 0;}
+  .at-row{margin-bottom:14px;}
+  .at-label{font-weight:700;font-size:16px;margin:0 0 6px;color:var(--gc-text);}
+  .badge.std{background:#eef0f2;color:var(--gc-text);border-radius:4px;font-size:15px;padding:6px 14px;}
+
+  /* step navigation buttons */
+  .step-nav{display:flex;flex-direction:column;gap:12px;margin-top:22px;}
+  .btn-prev{
+    width:100%;height:52px;background:#fff;border:2px solid var(--gc-navy);color:var(--gc-navy);
+    border-radius:8px;font-weight:700;font-size:18px;cursor:pointer;font-family:var(--display);
+  }
+  .btn-next{
+    width:100%;height:52px;background:var(--gc-navy);border:0;color:#fff;
+    border-radius:4px;font-weight:700;font-size:16px;cursor:pointer;font-family:var(--body);
+  }
+
+  /* ---------- Grand total ---------- */
+  .grand-total{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    border-top:1px solid var(--gc-rule);margin-top:8px;padding:18px 0 8px;flex-wrap:wrap;
+  }
+  .grand-total .lbl{font-family:var(--display);font-size:20px;font-weight:700;}
+  .grand-total .badge{border-radius:4px;font-size:16px;padding:7px 16px;}
+
+  /* ---------- Accessibility: visible focus ---------- */
+  a:focus-visible,button:focus-visible{
+    outline:3px solid var(--gc-focus);outline-offset:1px;
+  }
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
+
+  /* overflow ("more options") menu — anchored to the inline kebab */
+  .more-menu{
+    position:absolute;right:0;top:calc(100% + 6px);z-index:70;background:#fff;
+    border:1px solid var(--gc-border);border-radius:8px;box-shadow:0 8px 26px rgba(0,0,0,.20);
+    min-width:200px;overflow:hidden;
+  }
+  .more-menu[hidden]{display:none;}
+  .more-menu button{
+    display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;
+    border-bottom:1px solid #eee;padding:14px 16px;font-size:15px;font-weight:700;
+    color:var(--gc-navy);cursor:pointer;text-align:left;min-height:50px;font-family:var(--body);
+  }
+  .more-menu button:last-child{border-bottom:0;}
+  .more-menu button.danger{color:var(--gc-danger);}
+  .more-menu button svg{width:18px;height:18px;flex:0 0 auto;}
+
+  /* ---------- Guidance modal (centered dialog) ---------- */
+  .modal-overlay{
+    position:absolute;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.45);padding:18px;
+  }
+  .modal-overlay[hidden]{display:none;}
+  .modal{
+    width:100%;max-width:300px;background:#fff;border-radius:8px;padding:24px 22px 22px;
+    box-shadow:0 14px 44px rgba(0,0,0,.32);animation:sheetUp .2s ease;
+  }
+  .modal h2{font-family:var(--display);font-size:24px;font-weight:700;margin:0 0 16px;color:#1c1c1c;}
+  .modal p{margin:0 0 18px;font-size:16px;}
+  .modal ul{list-style:none;margin:0 0 24px;padding:0;}
+  .modal li{display:flex;gap:9px;margin-bottom:16px;font-size:16px;}
+  .modal li::before{content:"•";color:var(--gc-text);}
+  .modal a{color:var(--gc-link);text-decoration:underline;text-underline-offset:2px;}
+  .btn-modal-close{
+    background:var(--gc-navy);color:#fff;border:0;border-radius:4px;height:44px;padding:0 24px;
+    font-weight:700;font-size:15px;cursor:pointer;font-family:var(--body);
+  }
+
+  /* ---------- Toast ---------- */
+  .toast{
+    position:absolute;left:50%;bottom:24px;transform:translateX(-50%);z-index:130;
+    background:var(--gc-navy);color:#fff;font-size:14px;font-weight:700;
+    padding:10px 18px;border-radius:20px;box-shadow:0 6px 18px rgba(0,0,0,.25);
+    opacity:0;pointer-events:none;transition:opacity .2s;
+  }
+  .toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<div class="device" role="img" aria-label="Mobile preview of the DFO Funding application form">
+  <div class="device-notch" aria-hidden="true"></div>
+
+  <div class="app">
+
+    <header>
+      <div class="wordmark-row">
+        <div class="wordmark">
+          <svg class="flag" viewBox="0 0 1000 500" aria-hidden="true">
+            <rect width="1000" height="500" fill="#fff"/>
+            <rect width="250" height="500" fill="var(--gc-flag-red)"/>
+            <rect x="750" width="250" height="500" fill="var(--gc-flag-red)"/>
+            <path fill="var(--gc-flag-red)" d="M500,196.4 l13.6,25.4 c1.6,2.9 4.5,2.6 7.4,1 l9.8,-5.1 -7.3,38.6 c-1.5,7.1 1.1,9.1 5.7,4 l21.8,-24.4 5.6,13.1 c1.2,2.7 3.4,2.3 5.4,1.9 l20.7,-4.4 -6.7,24.4 c-1.4,5.4 -1,7.2 2.1,9.4 l7,5.6 -44.6,36.2 c-3,2.5 -2.1,3.5 -1.1,8.2 l3.7,12.3 -36.2,-3.1 c-4.5,-0.5 -5.4,1.2 -5.4,4 l1.7,41.2 -10.9,0 1.7,-41.2 c0,-2.8 -0.9,-4.5 -5.4,-4 l-36.2,3.1 3.7,-12.3 c1,-4.7 1.9,-5.7 -1.1,-8.2 l-44.6,-36.2 7,-5.6 c3.1,-2.2 3.5,-4 2.1,-9.4 l-6.7,-24.4 20.7,4.4 c2,0.4 4.2,0.8 5.4,-1.9 l5.6,-13.1 21.8,24.4 c4.6,5.1 7.2,3.1 5.7,-4 l-7.3,-38.6 9.8,5.1 c2.9,1.6 5.8,1.9 7.4,-1 z"/>
+          </svg>
+          <div class="gov">Government of Canada<span>Gouvernement du Canada</span></div>
+        </div>
+        <a class="lang" href="#" lang="fr" aria-label="Français">FR</a>
+      </div>
+
+      <div class="search">
+        <input type="text" aria-label="Search Canada.ca" placeholder="Search Canada.ca">
+        <button aria-label="Search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="menubar">
+      <button class="menu-btn" aria-expanded="false" aria-controls="mainnav" onclick="toggleNav(this)">Menu</button>
+    </div>
+
+    <nav id="mainnav" class="mainnav" aria-label="Primary">
+      <a href="#">DFO Funding Portal</a>
+      <a href="#">Applications and projects</a>
+      <a href="#">Search funding opportunity</a>
+      <a href="#">My organizations</a>
+      <a href="#">My profile</a>
+      <a href="#" class="nav-signout">Sign out</a>
+    </nav>
+
+    <main>
+      <div class="breadcrumb">
+        <a href="#">Homepage</a><span class="sep">›</span>
+        <a href="#">Link</a>
+      </div>
+
+      <h1>Application form</h1>
+      <p class="intro">This is the application form for the <strong>[Name of the FO]</strong>.</p>
+
+      <!-- Application form menu: sits in flow, sticks on scroll, opens bottom sheet -->
+      <div class="menu-sticky">
+        <button class="menu-trigger" aria-haspopup="dialog" aria-controls="formsheet" onclick="openSheet()">
+          <span>Form navigation</span>
+        </button>
+      </div>
+
+      <!-- Inline action bar: Save draft + overflow menu (replaces the old sticky bottom bar) -->
+      <div class="action-inline">
+        <button class="ai-save" onclick="saveDraft()">
+          Save draft
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>
+        </button>
+        <div class="ai-more-wrap">
+          <button class="ai-kebab" aria-haspopup="menu" aria-controls="moremenu" aria-label="More options" onclick="toggleMore(event)">
+            <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg>
+          </button>
+
+          <!-- More options menu -->
+          <div class="more-menu" id="moremenu" role="menu" hidden>
+            <button role="menuitem" onclick="closeMore();openGuidance()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.4 2.4 0 1 1 3.5 2.2c-.9.5-1.3 1-1.3 1.9"/><circle cx="12" cy="17" r=".6" fill="currentColor" stroke="none"/></svg>
+              Guidance
+            </button>
+            <button role="menuitem" onclick="closeMore();toast('Preview opened')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg>
+              Preview application
+            </button>
+            <button role="menuitem" class="danger" onclick="closeMore();toast('Draft deleted')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
+              Delete draft
+            </button>
+          </div>
+        </div>
+      </div>
+      <p class="autosave-note">Latest auto-saves: March 2, 2025 at 7:00 pm EST</p>
+      <hr class="action-divider">
+
+      <h2>Project name</h2>
+      <div class="field" data-field="projectname">
+        <div class="field-label">Project name <span class="req">(required)</span></div>
+        <p class="field-help">The project name will serve as the application name.</p>
+        <p class="field-error"><span class="warn"></span><span class="msg"></span></p>
+        <input id="project-name" type="text" aria-label="Project name" oninput="clearFieldError(this)" onblur="validateProjectName()">
+      </div>
+
+      <h2>Planned expenditure from DFO</h2>
+      <p class="field-help" style="font-size:16px;color:var(--gc-text);">Please indicate the portion or amount of the cost associated with the activities that is being requested from DFO.</p>
+
+      <!-- Activity 1 -->
+      <div class="activity" id="act-water">
+        <div class="badge-row"><span class="badge" id="badge-water">CAD $0</span></div>
+        <button class="activity-head" aria-expanded="true" onclick="toggleActivity('act-water', this)">
+          <svg class="acc-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gc-text)" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          <h3 class="activity-title">Water quality monitoring</h3>
+        </button>
+        <p class="activity-dates">January 1, 2026 - December 31, 2026</p>
+        <div class="activity-body">
+          <div id="water-items"></div>
+        </div>
+        <div class="activity-foot">
+          <button class="btn-add" onclick="addCostCategory('water')">
+            Add cost category
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Activity 2 -->
+      <div class="activity" id="act-community">
+        <div class="badge-row"><span class="badge" id="badge-community">CAD $0</span></div>
+        <button class="activity-head" aria-expanded="true" onclick="toggleActivity('act-community', this)">
+          <svg class="acc-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gc-text)" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          <h3 class="activity-title">Community outreach</h3>
+        </button>
+        <p class="activity-dates">January 1, 2026 - December 31, 2026</p>
+        <div class="activity-body">
+          <div id="community-items"></div>
+        </div>
+        <div class="activity-foot">
+          <button class="btn-add" onclick="addCostCategory('community')">
+            Add cost category
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="grand-total">
+        <span class="lbl">Total planned expenditure from DFO</span>
+        <span class="badge" id="grand-badge">CAD $0</span>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn-prev" onclick="toast('Previous step')">Previous step</button>
+        <button class="btn-next" onclick="if(validateProjectName()) toast('Next step')">Next step</button>
+      </div>
+    </main>
+  </div><!-- /.app -->
+
+  <!-- Bottom sheet: Application form menu -->
+  <div class="sheet-overlay" id="formsheet" hidden onclick="if(event.target===this)closeSheet()">
+    <div class="sheet" role="dialog" aria-modal="true" aria-label="Form navigation">
+      <div class="sheet-grab" aria-hidden="true"></div>
+      <div class="sheet-inner">
+        <button class="btn-close" onclick="closeSheet()">Close</button>
+        <h2 class="sheet-title">Form navigation</h2>
+
+        <div class="m-step done">
+          <button class="m-step-head" aria-expanded="false" onclick="toggleStep(this)">
+            <span class="marker">1</span><span class="label">Organization</span>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="m-substeps">
+            <div class="m-substep current"><span class="dot">•</span>Section<br><span class="pill complete">Complete <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5 9-10"/></svg></span></span></div>
+            <div class="m-substep">Section<br><span class="pill complete">Complete <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5 9-10"/></svg></span></span></div>
+            <div class="m-substep">Section<br><span class="pill complete">Complete <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5 9-10"/></svg></span></span></div>
+          </div>
+        </div>
+
+        <div class="m-step">
+          <button class="m-step-head" aria-expanded="false" onclick="toggleStep(this)">
+            <span class="marker">2</span><span class="label">Project</span>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="m-substeps">
+            <div class="m-substep">Section<br><span class="pill">${PEN}In progress</span></div>
+            <div class="m-substep">Section<br><span class="pill">${PEN}In progress</span></div>
+          </div>
+        </div>
+
+        <div class="m-step active expanded">
+          <button class="m-step-head" aria-expanded="true" onclick="toggleStep(this)">
+            <span class="marker">3</span><span class="label">Funding</span>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="m-substeps">
+            <div class="m-substep current"><span class="dot">•</span>Planned expenditure from DFO<br><span class="pill">${PEN}In progress</span></div>
+            <div class="m-substep">Anticipated source(s) of funding<br><span class="pill">${PEN}In progress</span></div>
+            <div class="m-substep">Financial requirements and commitments<br><span class="pill">${PEN}In progress</span></div>
+          </div>
+        </div>
+
+        <div class="m-step">
+          <button class="m-step-head" aria-expanded="false" onclick="toggleStep(this)">
+            <span class="marker">4</span><span class="label">Project target population</span>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="m-substeps">
+            <div class="m-substep">Section<br><span class="pill">${PEN}In progress</span></div>
+          </div>
+        </div>
+
+        <div class="m-step">
+          <button class="m-step-head" aria-expanded="false" onclick="toggleStep(this)">
+            <span class="marker">5</span><span class="label">Disclosure</span>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="m-substeps">
+            <div class="m-substep">Section<br><span class="pill">${PEN}In progress</span></div>
+          </div>
+        </div>
+
+        <div class="m-step">
+          <button class="m-step-head" aria-expanded="false" onclick="toggleStep(this)">
+            <span class="marker">6</span><span class="label">Supporting documents</span>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="m-substeps">
+            <div class="m-substep">Section<br><span class="pill">${PEN}In progress</span></div>
+          </div>
+        </div>
+
+        <div class="m-step">
+          <button class="m-step-head" aria-expanded="false" onclick="toggleStep(this)">
+            <span class="marker">7</span><span class="label">Declaration/signature</span>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="m-substeps">
+            <div class="m-substep">Section<br><span class="pill">${PEN}In progress</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div><!-- /.sheet-overlay -->
+
+  <!-- Cost category bottom sheet -->
+  <div class="sheet-overlay" id="cc-sheet" hidden onclick="if(event.target===this)cancelCostSheet()">
+    <div class="sheet" role="dialog" aria-modal="true" aria-label="Cost category">
+      <div class="sheet-grab" aria-hidden="true"></div>
+      <div class="sheet-inner">
+        <button class="btn-close" onclick="cancelCostSheet()">Close</button>
+        <div id="cc-form-host"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Guidance modal -->
+  <div class="modal-overlay" id="guidance" hidden onclick="if(event.target===this)closeGuidance()">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="guidance-title">
+      <h2 id="guidance-title">Guidance</h2>
+      <p>Please see the following guidance to help you fill out the application form.</p>
+      <ul>
+        <li><a href="#">Funding opportunity information</a></li>
+        <li><a href="#">Program guidance</a></li>
+        <li><a href="#">Budget proposal instruction</a></li>
+      </ul>
+      <button class="btn-modal-close" onclick="closeGuidance()">Close</button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</div>
+
+<script>
+  // pencil icon markup reused in the "In progress" pills
+  const PEN = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>`;
+  // inject pencil markup into the placeholders rendered above
+  document.querySelectorAll('.pill').forEach(p=>{ p.innerHTML = p.innerHTML.replace('${PEN}', PEN); });
+</script>
+
+<script>
+  const CATS = ["Monitoring and reporting","Equipment and supplies","Salaries and wages","Travel","Professional services"];
+  const state = { water:[], community:[] };
+
+  function money(n){ return "CAD $" + Number(n||0).toLocaleString("en-CA"); }
+
+  function toggleNav(btn){
+    const nav = document.getElementById('mainnav');
+    const open = nav.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open);
+  }
+
+  // ---- Bottom sheet ----
+  function openSheet(){
+    const s = document.getElementById('formsheet');
+    s.hidden = false;
+    const close = s.querySelector('.btn-close');
+    if (close) close.focus();
+    document.addEventListener('keydown', escClose);
+  }
+  function closeSheet(){
+    document.getElementById('formsheet').hidden = true;
+    document.removeEventListener('keydown', escClose);
+    const trigger = document.querySelector('.menu-trigger');
+    if (trigger) trigger.focus();
+  }
+  function escClose(e){ if (e.key === 'Escape') closeSheet(); }
+
+  function toggleStep(btn){
+    const step = btn.parentElement;
+    const expanded = step.classList.toggle('expanded');
+    btn.setAttribute('aria-expanded', expanded);
+  }
+
+  // ---- Guidance modal ----
+  function openGuidance(){
+    closeMore();
+    const m = document.getElementById('guidance');
+    m.hidden = false;
+    m.querySelector('.btn-modal-close').focus();
+    document.addEventListener('keydown', escGuidance);
+  }
+  function closeGuidance(){
+    document.getElementById('guidance').hidden = true;
+    document.removeEventListener('keydown', escGuidance);
+  }
+  function escGuidance(e){ if (e.key === 'Escape') closeGuidance(); }
+
+  // ---- Overflow "more options" menu ----
+  function toggleMore(e){
+    e.stopPropagation();
+    const m = document.getElementById('moremenu');
+    if (m.hidden){ m.hidden = false; setTimeout(()=>document.addEventListener('click', outsideMore),0); }
+    else closeMore();
+  }
+  function closeMore(){
+    document.getElementById('moremenu').hidden = true;
+    document.removeEventListener('click', outsideMore);
+  }
+  function outsideMore(e){ if (!e.target.closest('#moremenu') && !e.target.closest('.ai-kebab')) closeMore(); }
+
+  // ---- Save draft ----
+  function saveDraft(){ toast('Draft saved'); }
+
+  // ---- Lightweight toast ----
+  let toastTimer;
+  function toast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>t.classList.remove('show'), 1800);
+  }
+
+  function toggleActivity(id, btn){
+    const collapsed = document.getElementById(id).classList.toggle('collapsed');
+    if (btn) btn.setAttribute('aria-expanded', String(!collapsed));
+  }
+
+  // ---- Build the editable fieldset for an item (used for both Add and Edit) ----
+  function formHTML(act, item, idx){
+    const opts = ['<option value="">Select…</option>']
+      .concat(CATS.map(c=>`<option value="${c}"${c===item.cat?' selected':''}>${c}</option>`))
+      .join('');
+    return `
+      <div class="cc-form" data-id="${item.id}">
+        <h4>Cost category ${idx}</h4>
+        <div class="field" data-field="cat">
+          <div class="field-label">Cost category <span class="req">(required)</span></div>
+          <p class="field-help">Select a cost category from the list of eligible options for this activity. (Each activity can include multiple cost categories)</p>
+          <p class="field-error"><span class="warn"></span><span class="msg"></span></p>
+          <select class="f-cat" aria-label="Cost category" oninput="clearFieldError(this)">${opts}</select>
+        </div>
+        <div class="field" data-field="total">
+          <div class="field-label">Total cost amount <span class="req">(required)</span></div>
+          <p class="field-help">Enter the total cost amount for this cost category within this activity.</p>
+          <p class="field-error"><span class="warn"></span><span class="msg"></span></p>
+          <input type="number" class="f-total" inputmode="numeric" aria-label="Total cost amount" value="${item.total}" oninput="clearFieldError(this)">
+        </div>
+        <div class="field" data-field="req">
+          <div class="field-label">Amount Requested from DFO <span class="req">(required)</span></div>
+          <p class="field-help">Enter the amount you are requesting from DFO for this cost category within this activity.</p>
+          <p class="field-error"><span class="warn"></span><span class="msg"></span></p>
+          <input type="number" class="f-req" inputmode="numeric" aria-label="Amount Requested from DFO" value="${item.req}" oninput="clearFieldError(this)">
+        </div>
+        <div class="field" data-field="desc">
+          <div class="field-label">Description</div>
+          <p class="field-help">Include relevant details such as quantities, unit prices, specific items, etc.</p>
+          <textarea class="f-desc" aria-label="Description">${item.desc||''}</textarea>
+        </div>
+        <div class="form-actions">
+          <button class="btn-done" onclick="commitItem('${act}',${item.id})">Done</button>
+          <button class="btn-delete" onclick="deleteItem('${act}',${item.id})">Delete</button>
+        </div>
+      </div>`;
+  }
+
+  function cardHTML(act, item){
+    return `
+      <div class="cc-card">
+        <div class="cc-card-head"><h4 class="cc-name">${item.cat}</h4></div>
+        <div class="cc-card-body">
+          <div class="cc-row"><p class="k">Amount requested</p><p class="v">${money(item.req)}</p></div>
+          <div class="cc-row"><p class="k">Total cost</p><p class="v">${money(item.total)}</p></div>
+        </div>
+        <div class="cc-card-actions">
+          <button class="link-edit" onclick="editItem('${act}',${item.id})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Edit
+          </button>
+          <button class="link-delete" onclick="deleteItem('${act}',${item.id})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>Delete
+          </button>
+        </div>`.concat('</div>');
+  }
+
+  // ---- Sheet-driven add/edit ----
+  let currentEdit = null;  // {act, id, isNew}
+
+  function openCostSheet(act, id, isNew){
+    currentEdit = {act, id, isNew};
+    const item = state[act].find(i=>i.id===id);
+    const idx = state[act].indexOf(item) + 1;
+    document.getElementById('cc-form-host').innerHTML = formHTML(act, item, idx);
+    const s = document.getElementById('cc-sheet');
+    s.hidden = false;
+    const sel = s.querySelector('.f-cat'); if (sel) sel.focus();
+    document.addEventListener('keydown', escCC);
+  }
+
+  function addCostCategory(act){
+    if (currentEdit) return;                 // a sheet is already open
+    const id = Date.now();
+    state[act].push({id, cat:'', total:'', req:'', desc:'', isNew:true});
+    openCostSheet(act, id, true);
+  }
+
+  function editItem(act, id){
+    if (currentEdit) return;
+    openCostSheet(act, id, false);
+  }
+
+  function closeCostSheet(){
+    document.getElementById('cc-sheet').hidden = true;
+    document.getElementById('cc-form-host').innerHTML = '';
+    document.removeEventListener('keydown', escCC);
+    currentEdit = null;
+  }
+
+  // Close button — discard. A never-saved (new) category is removed.
+  function cancelCostSheet(){
+    if (!currentEdit) return;
+    const {act, id, isNew} = currentEdit;
+    if (isNew) state[act] = state[act].filter(i=>i.id!==id);
+    closeCostSheet();
+    render(act);
+  }
+  function escCC(e){ if (e.key === 'Escape') cancelCostSheet(); }
+
+  // ---- Done: validate, save, close sheet, show summary card ----
+  function commitItem(act, id){
+    if (!validateForm(id)) return;
+    const form = document.querySelector(`#cc-form-host .cc-form[data-id="${id}"]`);
+    const item = state[act].find(i=>i.id===id);
+    if (!form || !item) return;
+    item.cat   = form.querySelector('.f-cat').value;
+    item.total = Number(form.querySelector('.f-total').value);
+    item.req   = Number(form.querySelector('.f-req').value);
+    item.desc  = form.querySelector('.f-desc').value;
+    item.isNew = false;
+    closeCostSheet();
+    render(act);
+  }
+
+  function deleteItem(act, id){
+    state[act] = state[act].filter(i=>i.id!==id);
+    if (currentEdit && currentEdit.id === id) closeCostSheet();
+    render(act);
+  }
+
+  // ---- Validation ----
+  const WARN = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2 1 21h22z"/><rect x="11" y="9" width="2" height="6" fill="#fff"/><rect x="11" y="16.3" width="2" height="2" fill="#fff"/></svg>`;
+
+  function setError(field, msg){
+    if (!field) return;
+    field.classList.add('error');
+    const warn = field.querySelector('.field-error .warn');
+    if (warn && !warn.innerHTML.trim()) warn.innerHTML = WARN;
+    const m = field.querySelector('.field-error .msg');
+    if (m) m.textContent = msg;
+  }
+  function clearError(field){ if (field) field.classList.remove('error'); }
+  function clearFieldError(el){ clearError(el.closest('.field')); }
+
+  function validateForm(id){
+    const form = document.querySelector(`#cc-form-host .cc-form[data-id="${id}"]`);
+    if (!form) return true;
+    form.querySelectorAll('.field').forEach(clearError);
+
+    const cat = form.querySelector('.f-cat').value.trim();
+    const totalRaw = form.querySelector('.f-total').value.trim();
+    const reqRaw = form.querySelector('.f-req').value.trim();
+    const total = Number(totalRaw), req = Number(reqRaw);
+    let first = null;
+    const err = (name, msg)=>{
+      const f = form.querySelector(`.field[data-field="${name}"]`);
+      setError(f, msg); if (!first) first = f;
+    };
+
+    if (!cat) err('cat', 'Select a cost category.');
+    if (!totalRaw || isNaN(total) || total <= 0) err('total', 'Enter the total cost amount.');
+    if (!reqRaw || isNaN(req) || req <= 0) err('req', 'Enter the amount requested from DFO.');
+    else if (totalRaw && !isNaN(total) && total > 0 && req > total)
+      err('req', 'Amount requested cannot exceed the total cost amount.');
+
+    if (first){
+      first.scrollIntoView({behavior:'smooth', block:'center'});
+      const ctrl = first.querySelector('input,select,textarea');
+      if (ctrl) ctrl.focus();
+      return false;
+    }
+    return true;
+  }
+
+  function validateProjectName(){
+    const input = document.getElementById('project-name');
+    const field = input.closest('.field');
+    if (!input.value.trim()){ setError(field, 'Enter a project name.'); return false; }
+    clearError(field); return true;
+  }
+
+  function render(act){
+    const wrap = document.getElementById(act+'-items');
+    const items = state[act];
+    let html = '';
+
+    items.forEach(i=>{ if (!i.isNew) html += cardHTML(act, i); });
+
+    const committed = items.filter(i=>!i.isNew);
+    if (committed.length){
+      const sumReq = committed.reduce((s,i)=>s+Number(i.req),0);
+      const sumTot = committed.reduce((s,i)=>s+Number(i.total),0);
+      html += `
+        <div class="activity-totals">
+          <hr class="at-divider">
+          <div class="at-row"><p class="at-label">Total Amount requested</p><span class="badge std">${money(sumReq)}</span></div>
+          <div class="at-row"><p class="at-label">Total cost</p><span class="badge std">${money(sumTot)}</span></div>
+        </div>`;
+      document.getElementById('badge-'+act).textContent = money(sumReq);
+    } else {
+      document.getElementById('badge-'+act).textContent = "CAD $0";
+    }
+
+    wrap.innerHTML = html;
+    updateGrand();
+  }
+
+  function updateGrand(){
+    const all = [...state.water, ...state.community]
+      .filter(i=>!i.isNew).reduce((s,i)=>s+Number(i.req),0);
+    document.getElementById('grand-badge').textContent = money(all);
+  }
+</script>
+</body>
+</html>
